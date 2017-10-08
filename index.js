@@ -57,7 +57,8 @@ app.post('/github', (req, res) => {
   return res.sendStatus(400);
 });
 
-const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started listening for github webhooks calls'));
+const port = 8000
+const server = app.listen(port, () => console.log(`anpr-github-privacy-check has just started listening for github webhooks calls on port ${port}`));
 
 function validateGithubSignature(signature, body) {
   const secret = credentials.secret;
