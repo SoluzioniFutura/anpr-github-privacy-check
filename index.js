@@ -28,7 +28,7 @@ app.post('/github', (req, res) => {
 
   //Pubblicazione issue
   if(event === 'issues') {
-    if(body.action !== 'opened') {
+    if(body.action !== 'opened' && body.action !== 'edited') {
       //Nothing to for other events
       return res.sendStatus(200);
     }
@@ -73,7 +73,7 @@ function issueCommentPublishedOrUpdated(body) {
   if(newMessage !== messagge) {
     return Promise.all([
       GithubApi.sendIssueWarnComment(issue, repository, sender),
-      GithubApi.updateIssueCommentBody(issue, repository, newMessage)
+      GithubApi.updateIssueCommentBody(comment, repository, newMessage)
     ]);
   } else {
     return Promise.resolve(null);
