@@ -68,7 +68,7 @@ function issueCreated(body) {
 function issueCommentPublishedOrUpdated(body) {
   const { comment, repository, issue, sender } = body;
   const messagge = comment.body;
-  return processIssueText(comment.body, repository, issue, sender)
+  return processIssueText(messagge)
     .then(newMessage => {
       if(newMessage !== messagge) {
         return Promise.all([
