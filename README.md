@@ -8,7 +8,11 @@ and comment, censoring it and posting a warning to the author.
 
 To setup the webhook you just have to modify your repo settings as you can
 see on this image: 
+
+
 ![Immagine di configurazione web hooks github](https://github.com/SoluzioniFutura/anpr-github-privacy-check/blob/master/info.png?raw=true)
+
+
 In order to run properly, the application requires to be configured with your
 github credentials (username and password OR a token) and, optionally, a secret key
 that you must also specify in the webhook configuration process.
