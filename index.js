@@ -1,11 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const GithubApi = require('./GithubApi');
-const config = require('./config.json');
-const securityChecks = config.securityChecks.map(check => {
-  check.regexp = new RegExp(check, 'g');
-  return check;
-});
+const securityChecks = require('./securityCheck');
+
 const app = new express();
 
 app.use(bodyParser.json());
