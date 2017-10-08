@@ -62,7 +62,7 @@ const server = app.listen(8000, () => console.log('anpr-github-privacy-check has
 function validateGithubSignature(signature, body) {
   const secret = config.secret;
   if(secret) {
-    const hash = crypto.createHmac('256', config.secret).update(body).digest('hex');
+    const hash = crypto.createHmac('256', config.secret).update(JSON.stringify(body)).digest('hex');
     console.log(hash);
     //return hash === signature;
   }
