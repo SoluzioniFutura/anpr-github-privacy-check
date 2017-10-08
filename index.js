@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const GithubApi = require('./GithubApi');
-const securityChecks = require('./securityCheck').map(check => Object.assign(check, { regexp: new RegExp(check.regexp, 'g') }));
-const config = require('./config.json');
+const securityChecks = require('./securityChecks').map(check => Object.assign(check, { regexp: new RegExp(check.regexp, 'g') }));
+const credentials = require('./credentials.json');
 const crypto = require('crypto');
 
 const app = new express();
@@ -60,9 +60,9 @@ app.post('/github', (req, res) => {
 const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started listening for github webhooks calls'));
 
 function validateGithubSignature(signature, body) {
-  const secret = config.secret;
+  const secret = credentials.secret;
   if(secret) {
-    const hash = crypto.createHmac('sha1', config.secret).update(JSON.stringify(body)).digest('hex');
+    const hash = crypto.createHmac('sha1', credentials.secret).update(JSON.stringify(body)).digest('hex');
     return `sha1=${hash}` === signature;
   }
   return true;

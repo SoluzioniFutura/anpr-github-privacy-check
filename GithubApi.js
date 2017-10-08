@@ -1,11 +1,12 @@
 const GitHub = require('github-api');
-const config = require('./config.json');
+const { credentials } = require('./credentials.json');
+const { warningMessage } = require('./config.json');
 
-const gh = new GitHub(config.credentials);
+const gh = new GitHub(credentials);
 
 function sendIssueWarnComment(issue, repository, user) {
   const issues = gh.getIssues(repository.owner.login, repository.name);
-  return issues.createIssueComment(issue.number, `${user.login} fai attenzione a non pubblicare dati sensibili quali codici fiscali/numeri di telefono/nomi e cognomi. Per questa volta dovrei aver rimediato alla svista per te.`);
+  return issues.createIssueComment(issue.number, warningMessage.replace('{user}', user.login));
 }
 
 function updateIssueBody(issue, repository, body) {

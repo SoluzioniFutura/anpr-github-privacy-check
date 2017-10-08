@@ -1,8 +1,3 @@
 {
-  "secret": "",
-  "credentials": {
-    "username": "FOO",
-    "password": "NotFoo",
-    "token": "MY_OAUTH_TOKEN"
-  }
+  "warningMessage": "{user} fai attenzione a non pubblicare dati sensibili quali codici fiscali/numeri di telefono/nomi e cognomi. Per questa volta dovrei aver rimediato alla svista per te."
 }
