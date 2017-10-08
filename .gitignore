@@ -42,3 +42,5 @@ node_modules
 .idea
 lambda-config.json
 tester/outputs
+
+config/config.json
