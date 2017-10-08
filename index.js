@@ -28,7 +28,7 @@ app.post('/github', (req, res) => {
 
   //Pubblicazione issue
   if(event === 'issues') {
-    if(body.action !== 'opened') {
+    if(body.action !== 'opened' && body.action !== 'edited') {
       //Nothing to for other events
       return res.sendStatus(200);
     }
