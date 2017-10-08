@@ -13,7 +13,7 @@ app.post('/github', (req, res) => {
   const { body } = req;
 
   //Pubblicazione di un commento a una issue
-  if(req.header('X-GitHub-Event') !== 'issue_comment') {
+  if(req.header('X-GitHub-Event') === 'issue_comment') {
     if(body.action === 'deleted') {
       //Nothing to do if issue comment is deleted
       return res.sendStatus(200);
@@ -23,12 +23,12 @@ app.post('/github', (req, res) => {
       .then(() => res.sendStatus(200))
       .catch((err) => {
         console.error('Message validations on issueCommentPublishedOrUpdated failed with exception: ', err);
-        res.send();
+        res.sendStatus(200);
       });
   }
 
   //Pubblicazione issue
-  if(req.header('X-GitHub-Event') !== 'issues') {
+  if(req.header('X-GitHub-Event') === 'issues') {
     if(body.action !== 'opened') {
       //Nothing to for other events
       return res.sendStatus(200);
@@ -43,35 +43,38 @@ app.post('/github', (req, res) => {
   }
 
   console.log('anpr-github-privacy-check has been subscribed to a wrong event. Please only select issue_comment and issues');
-  return res.send();
+  return res.sendStatus(200);
 });
 
 app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
 
 function issueCreated(body) {
-  return processIssueText(body.issue.body, body.issue, body.issue.user)
+  return processIssueText(body.issue.body, body.repository, body.issue, body.issue.user)
     .then(newMessage => {
+      console.log(newMessage);
       if(newMessage) {
-        return GithubApi.updateIssueBody(body.issue, newMessage);
+        return GithubApi.updateIssueBody(body.issue, body.repository, newMessage);
       }
     });
 }
 
 function issueCommentPublishedOrUpdated(body) {
-  return processIssueText(body.comment.body, body.issue, body.sender)
+  return processIssueText(body.comment.body, body.repository, body.issue, body.sender)
     .then(newMessage => {
       if(newMessage) {
-        return GithubApi.updateIssueCommentBody(body.issue, newMessage);
+        return GithubApi.updateIssueCommentBody(body.issue, body.repository, newMessage);
       }
     });
 }
 
-function processIssueText(message, issue, user) {
+function processIssueText(message, repository, issue, user) {
   const codiceFiscaleMatches = codiceFiscaleRegexp.test(message);
   const numeroDiTelefonoMatches = numeroDiTelefonoRegexp.test(message);
 
+  console.log(codiceFiscaleMatches + ' ' + numeroDiTelefonoMatches);
+
   if(numeroDiTelefonoMatches || codiceFiscaleMatches) {
-    return GithubApi.sendIssueWarnComment(issue, user)
+    return GithubApi.sendIssueWarnComment(issue, repository, user)
       .then(() => {
         if(codiceFiscaleMatches) {
           message = message.replace(codiceFiscaleRegexp, '[Codice Fiscale privato]');
