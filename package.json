@@ -1,0 +1,24 @@
+{
+  "name": "anpr-github-privacy-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^4.8.0",
+    "express": "^4.16.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SoluzioniFutura/anpr-github-privacy-check.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SoluzioniFutura/anpr-github-privacy-check/issues"
+  },
+  "homepage": "https://github.com/SoluzioniFutura/anpr-github-privacy-check#readme"
+}
