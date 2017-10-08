@@ -1,9 +1,4 @@
 module.exports = [
-  //numero cellulare
-  {
-    replaceWith: '[Numero di cellulare]',
-    regexp: /(\((00|\+)39\)|(00|\+)39)?(38[890]|34[7-90]|36[680]|33[3-90]|32[89])\d{7}/
-  },
   //codice fiscale
   {
     replaceWith: '[Codice fiscale]',
@@ -23,5 +18,10 @@ module.exports = [
   {
     replaceWith: '[Email]',
     regexp: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+  },
+  //numero cellulare
+  {
+    replaceWith: '[Numero di cellulare]',
+    regexp: /(\((00|\+)39\)|(00|\+)39)?(38[890]|34[7-90]|36[680]|33[3-90]|32[89])\d{7}/
   }
 ];
