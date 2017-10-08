@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const GithubApi = require('./GithubApi');
-
-const codiceFiscaleRegexp = /(?:[B-DF-HJ-NP-TV-Z](?:[AEIOU]{2}|[AEIOU]X)|[AEIOU]{2}X|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[1256LMRS][\dLMNP-V])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[\dLMNP-V][1-9MNP-V]|[1-9MNP-V][0L]))[A-Z]/g;
-const numeroDiTelefonoRegexp = /(\((00|\+)39\)|(00|\+)39)?(38[890]|34[7-90]|36[680]|33[3-90]|32[89])\d{7}/g;
-
+const config = require('./config.json');
+const securityChecks = config.securityChecks.map(check => {
+  check.regexp = new RegExp(check, 'g');
+  return check;
+});
 const app = new express();
 
 app.use(bodyParser.json());
@@ -54,35 +55,38 @@ app.post('/github', (req, res) => {
 const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
 
 function issueCreated(body) {
-  return processIssueText(body.issue.body, body.repository, body.issue, body.issue.user)
+  const { issue, repository } = body;
+  const messagge = issue.body;
+  return processIssueText(messagge)
     .then(newMessage => {
-      if(newMessage) {
-        return GithubApi.updateIssueBody(body.issue, body.repository, newMessage);
+      if(newMessage !== messagge) {
+        return Promise.all([
+          GithubApi.sendIssueWarnComment(issue, repository, issue.user),
+          GithubApi.updateIssueBody(issue, repository, newMessage)
+        ]);
       }
     });
 }
 
 function issueCommentPublishedOrUpdated(body) {
-  return processIssueText(body.comment.body, body.repository, body.issue, body.sender)
+  const { comment, repository, issue, sender } = body;
+  const messagge = comment.body;
+  return processIssueText(comment.body, repository, issue, sender)
     .then(newMessage => {
-      if(newMessage) {
-        return GithubApi.updateIssueCommentBody(body.issue, body.repository, newMessage);
+      if(newMessage !== messagge) {
+        return Promise.all([
+          GithubApi.sendIssueWarnComment(issue, repository, sender),
+          GithubApi.updateIssueCommentBody(issue, repository, newMessage)
+        ]);
       }
     });
 }
 
-function processIssueText(message, repository, issue, user) {
-  const codiceFiscaleMatches = codiceFiscaleRegexp.test(message);
-  const numeroDiTelefonoMatches = numeroDiTelefonoRegexp.test(message);
-
-  if(codiceFiscaleMatches) message = message.replace(codiceFiscaleRegexp, '[Codice Fiscale privato]');
-  if(numeroDiTelefonoMatches) message = message.replace(numeroDiTelefonoRegexp, '[Numero di telefono privato]');
-
-  if(numeroDiTelefonoMatches || codiceFiscaleMatches) {
-    return GithubApi.sendIssueWarnComment(issue, repository, user).then(() => message);
-  } else {
-    return Promise.resolve(null);
-  }
+function processIssueText(message) {
+  securityChecks.forEach(check => {
+    message = message.replace(check.regexp, check.replaceWith);
+  });
+  return message;
 }
 
 module.exports = server;
