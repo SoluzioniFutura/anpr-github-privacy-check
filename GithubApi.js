@@ -15,7 +15,7 @@ function updateIssueBody(issue, repository, body) {
 
 function updateIssueCommentBody(comment, repository, body) {
   const issues = gh.getIssues(repository.owner.login, repository.name);
-  return issues.editIssueComment(comment.id, { body });
+  return issues.editIssueComment(comment.id, body);
 }
 
 module.exports = { sendIssueWarnComment, updateIssueBody, updateIssueCommentBody };
