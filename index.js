@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 
 app.post('/github', (req, res) => {
   const { body } = req;
-
   //Pubblicazione di un commento a una issue
   if(req.header('X-GitHub-Event') === 'issue_comment') {
     if(body.action === 'deleted') {
       //Nothing to do if issue comment is deleted
       return res.sendStatus(200);
     }
-
     return issueCommentPublishedOrUpdated(body)
-      .then(() => res.sendStatus(200))
+      .then(() => {
+        res.sendStatus(200)
+      })
       .catch((err) => {
         console.error('Message validations on issueCommentPublishedOrUpdated failed with exception: ', err);
-        res.sendStatus(200);
+        res.sendStatus(500);
       });
   }
 
@@ -38,12 +38,12 @@ app.post('/github', (req, res) => {
       .then(() => res.sendStatus(200))
       .catch((err) => {
         console.error('Message validations on issueCommentPublishedOrUpdated failed with exception: ', err);
-        res.sendStatus(200);
+        res.sendStatus(500);
       });
   }
 
   console.log('anpr-github-privacy-check has been subscribed to a wrong event. Please only select issue_comment and issues');
-  return res.sendStatus(200);
+  return res.sendStatus(400);
 });
 
 app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
@@ -79,3 +79,5 @@ function processIssueText(message, repository, issue, user) {
     return Promise.resolve(null);
   }
 }
+
+module.exports = app;
