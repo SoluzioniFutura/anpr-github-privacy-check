@@ -6,7 +6,7 @@ const gh = new GitHub(credentials);
 
 function sendIssueWarnComment(issue, repository, user) {
   const issues = gh.getIssues(repository.owner.login, repository.name);
-  return issues.createIssueComment(issue.number, warningMessage.replace('{user}', user.login));
+  return issues.createIssueComment(issue.number, warningMessage.replace('{user}', `@${user.login}`));
 }
 
 function updateIssueBody(issue, repository, body) {
