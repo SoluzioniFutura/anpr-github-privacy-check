@@ -43,4 +43,4 @@ node_modules
 lambda-config.json
 tester/outputs
 
-config/config.json
+config.json
