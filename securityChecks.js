@@ -18,5 +18,10 @@ module.exports = [
   {
     replaceWith: '[Carta di credito]',
     regexp: /5[1-5][0-9]{14}?/
+  },
+  //email
+  {
+    replaceWith: '[Email]',
+    regexp: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
   }
 ];
