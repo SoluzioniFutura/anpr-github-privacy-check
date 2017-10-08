@@ -60,6 +60,8 @@ function issueCreated(body) {
       GithubApi.sendIssueWarnComment(issue, repository, issue.user),
       GithubApi.updateIssueBody(issue, repository, newMessage)
     ]);
+  } else {
+    return Promise.resolve(null);
   }
 }
 
@@ -72,6 +74,8 @@ function issueCommentPublishedOrUpdated(body) {
       GithubApi.sendIssueWarnComment(issue, repository, sender),
       GithubApi.updateIssueCommentBody(issue, repository, newMessage)
     ]);
+  } else {
+    return Promise.resolve(null);
   }
 }
 
