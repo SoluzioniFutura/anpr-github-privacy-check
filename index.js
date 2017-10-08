@@ -19,7 +19,7 @@ app.post('/github', (req, res) => {
     }
     return issueCommentPublishedOrUpdated(body)
       .then(() => {
-        res.sendStatus(200)
+        res.sendStatus(200);
       })
       .catch((err) => {
         console.error('Message validations on issueCommentPublishedOrUpdated failed with exception: ', err);
@@ -46,7 +46,7 @@ app.post('/github', (req, res) => {
   return res.sendStatus(400);
 });
 
-app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
+const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
 
 function issueCreated(body) {
   return processIssueText(body.issue.body, body.repository, body.issue, body.issue.user)
@@ -80,4 +80,4 @@ function processIssueText(message, repository, issue, user) {
   }
 }
 
-module.exports = app;
+module.exports = server;
