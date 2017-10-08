@@ -14,7 +14,7 @@ app.post('/github', (req, res) => {
   const event = req.header('X-GitHub-Event');
   const signature = req.header('X-Hub-Signature');
 
-  if(!validateGithubSignature(signature)) {
+  if(!validateGithubSignature(signature, body)) {
     return res.sendStatus(401);
   }
   //Pubblicazione di un commento a una issue
@@ -62,9 +62,8 @@ const server = app.listen(8000, () => console.log('anpr-github-privacy-check has
 function validateGithubSignature(signature, body) {
   const secret = config.secret;
   if(secret) {
-    const hash = crypto.createHmac('256', config.secret).update(JSON.stringify(body)).digest('hex');
-    console.log(hash);
-    //return hash === signature;
+    const hash = crypto.createHmac('sha1', config.secret).update(JSON.stringify(body)).digest('hex');
+    return `sha1=${hash}` === signature;
   }
   return true;
 }
