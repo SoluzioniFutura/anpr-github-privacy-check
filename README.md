@@ -1,16 +1,23 @@
 #anpr-github-privacy-check
-Questo progetto usa express per esporre un endpoint in POST /github sfruttando le [webhook di github](https://developer.github.com/webhooks)
-In particolare si fa uso di [IssueCommentEvent](https://developer.github.com/v3/activity/events/types/#issuecommentevent) per ricevere eventi riguardo la creazione/aggiornamento di commenti a issue e [IssuesEvent](https://developer.github.com/v3/activity/events/types/#issuesevent)  per ricevere eventi rigaurdo la creazione e aggiornament odi issues su github.
-Per configurare le web hooks di github si consiglia di configurarle per l'utente 'italia' come in questa figura:
-![Immagine di configurazione web hooks github](./info.png)
+This nodejs project executes an ExpressJs web server that exposes a 
+[GitHub webhook](https://developer.github.com/webhooks) compliant endpoint
+at `/github` POST endpoint.
 
-##Configurazioni
-####Github credentials and web hook secret
-Le github credentials sono configurabili obbligatoriamente nel file credentials.json.
-Il credentials.json ha i seguenti parametri configurabili
+The application will search for any sensitive information inside every new issue
+and comment, censoring it and posting a warning to the author.
 
-####Warning message
-Con questa libreria è possibile configurare il messaggio di warning che viene mandato nel momento in cui qualcuno pubblica un'informazione privata.
-Si veda il file config.json
-####Security checks
-Inoltre si possono configurare molto facilmente i security checks da eseguire su
+To setup the webhook you just have to modify your repo settings as you can
+see on this image: 
+![Immagine di configurazione web hooks github](https://github.com/SoluzioniFutura/anpr-github-privacy-check/blob/master/info.png?raw=true)
+In order to run properly, the application requires to be configured with your
+github credentials (username and password OR a token) and, optionally, a secret key
+that you must also specify in the webhook configuration process.
+
+Right now the application will scrape for:
+- italian cellular phone numbers
+- italian social security number
+- visa and mastercard credit cards
+- emails
+
+You can easily add other categories of elements to scrape for simply adding 
+new RegExp to `securityChecks.js`;
