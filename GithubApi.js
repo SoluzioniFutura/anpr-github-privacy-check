@@ -1,5 +1,5 @@
 const GitHub = require('github-api');
-const config = require('./config/config.json');
+const config = require('./config.json');
 
 const gh = new GitHub(config.credentials);
 

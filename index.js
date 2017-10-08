@@ -11,8 +11,9 @@ app.use(bodyParser.json());
 
 app.post('/github', (req, res) => {
   const { body } = req;
+  const event = req.header('X-GitHub-Event');
   //Pubblicazione di un commento a una issue
-  if(req.header('X-GitHub-Event') === 'issue_comment') {
+  if(event === 'issue_comment') {
     if(body.action === 'deleted') {
       //Nothing to do if issue comment is deleted
       return res.sendStatus(200);
@@ -28,7 +29,7 @@ app.post('/github', (req, res) => {
   }
 
   //Pubblicazione issue
-  if(req.header('X-GitHub-Event') === 'issues') {
+  if(event === 'issues') {
     if(body.action !== 'opened') {
       //Nothing to for other events
       return res.sendStatus(200);
@@ -40,6 +41,10 @@ app.post('/github', (req, res) => {
         console.error('Message validations on issueCommentPublishedOrUpdated failed with exception: ', err);
         res.sendStatus(500);
       });
+  }
+
+  if(event === 'ping') {
+    return res.sendStatus(200);
   }
 
   console.log('anpr-github-privacy-check has been subscribed to a wrong event. Please only select issue_comment and issues');
