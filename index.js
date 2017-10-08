@@ -54,29 +54,25 @@ const server = app.listen(8000, () => console.log('anpr-github-privacy-check has
 function issueCreated(body) {
   const { issue, repository } = body;
   const messagge = issue.body;
-  return processIssueText(messagge)
-    .then(newMessage => {
-      if(newMessage !== messagge) {
-        return Promise.all([
-          GithubApi.sendIssueWarnComment(issue, repository, issue.user),
-          GithubApi.updateIssueBody(issue, repository, newMessage)
-        ]);
-      }
-    });
+  const newMessage = processIssueText(messagge);
+  if(newMessage !== messagge) {
+    return Promise.all([
+      GithubApi.sendIssueWarnComment(issue, repository, issue.user),
+      GithubApi.updateIssueBody(issue, repository, newMessage)
+    ]);
+  }
 }
 
 function issueCommentPublishedOrUpdated(body) {
   const { comment, repository, issue, sender } = body;
   const messagge = comment.body;
-  return processIssueText(messagge)
-    .then(newMessage => {
-      if(newMessage !== messagge) {
-        return Promise.all([
-          GithubApi.sendIssueWarnComment(issue, repository, sender),
-          GithubApi.updateIssueCommentBody(issue, repository, newMessage)
-        ]);
-      }
-    });
+  const newMessage = processIssueText(messagge);
+  if(newMessage !== messagge) {
+    return Promise.all([
+      GithubApi.sendIssueWarnComment(issue, repository, sender),
+      GithubApi.updateIssueCommentBody(issue, repository, newMessage)
+    ]);
+  }
 }
 
 function processIssueText(message) {
