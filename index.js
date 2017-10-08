@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const GithubApi = require('./GithubApi');
-const securityChecks = require('./securityCheck');
+const securityChecks = require('./securityCheck').map(check => Object.assign(check, { regexp: new RegExp(check.regexp, 'g') }));
 
 const app = new express();
 
@@ -41,6 +41,7 @@ app.post('/github', (req, res) => {
       });
   }
 
+  //Ping event. Called on webhook registration
   if(event === 'ping') {
     return res.sendStatus(200);
   }
@@ -81,7 +82,7 @@ function issueCommentPublishedOrUpdated(body) {
 
 function processIssueText(message) {
   securityChecks.forEach(check => {
-    message = message.replace(check.regexp, check.replaceWith);
+    message = message.replace(check.regexp, check.replaceWith, 'g');
   });
   return message;
 }
