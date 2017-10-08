@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const GithubApi = require('./GithubApi');
 const securityChecks = require('./securityCheck').map(check => Object.assign(check, { regexp: new RegExp(check.regexp, 'g') }));
+const config = require('./config.json');
+const crypto = require('crypto');
 
 const app = new express();
 
@@ -10,6 +12,11 @@ app.use(bodyParser.json());
 app.post('/github', (req, res) => {
   const { body } = req;
   const event = req.header('X-GitHub-Event');
+  const signature = req.header('X-Hub-Signature');
+
+  if(!validateGithubSignature(signature)) {
+    return res.sendStatus(401);
+  }
   //Pubblicazione di un commento a una issue
   if(event === 'issue_comment') {
     if(body.action === 'deleted') {
@@ -50,7 +57,17 @@ app.post('/github', (req, res) => {
   return res.sendStatus(400);
 });
 
-const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started to listen for github webhooks calls'));
+const server = app.listen(8000, () => console.log('anpr-github-privacy-check has just started listening for github webhooks calls'));
+
+function validateGithubSignature(signature, body) {
+  const secret = config.secret;
+  if(secret) {
+    const hash = crypto.createHmac('256', config.secret).update(body).digest('hex');
+    console.log(hash);
+    //return hash === signature;
+  }
+  return true;
+}
 
 function issueCreated(body) {
   const { issue, repository } = body;
