@@ -1,9 +1,7 @@
 {
   "credentials": {
     "username": "FOO",
-    "password": "NotFoo"
-    /* also acceptable:
-       "token": "MY_OAUTH_TOKEN"
-     */
+    "password": "NotFoo",
+    "token": "MY_OAUTH_TOKEN"
   }
 }

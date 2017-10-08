@@ -51,7 +51,6 @@ app.listen(8000, () => console.log('anpr-github-privacy-check has just started t
 function issueCreated(body) {
   return processIssueText(body.issue.body, body.repository, body.issue, body.issue.user)
     .then(newMessage => {
-      console.log(newMessage);
       if(newMessage) {
         return GithubApi.updateIssueBody(body.issue, body.repository, newMessage);
       }
@@ -71,20 +70,12 @@ function processIssueText(message, repository, issue, user) {
   const codiceFiscaleMatches = codiceFiscaleRegexp.test(message);
   const numeroDiTelefonoMatches = numeroDiTelefonoRegexp.test(message);
 
-  console.log(codiceFiscaleMatches + ' ' + numeroDiTelefonoMatches);
+  if(codiceFiscaleMatches) message = message.replace(codiceFiscaleRegexp, '[Codice Fiscale privato]');
+  if(numeroDiTelefonoMatches) message = message.replace(numeroDiTelefonoRegexp, '[Numero di telefono privato]');
 
   if(numeroDiTelefonoMatches || codiceFiscaleMatches) {
-    return GithubApi.sendIssueWarnComment(issue, repository, user)
-      .then(() => {
-        if(codiceFiscaleMatches) {
-          message = message.replace(codiceFiscaleRegexp, '[Codice Fiscale privato]');
-        }
-        if(numeroDiTelefonoMatches) {
-          message = message.replace(numeroDiTelefonoRegexp, '[Numero di telefono privato]');
-        }
-        return message;
-      });
+    return GithubApi.sendIssueWarnComment(issue, repository, user).then(() => message);
+  } else {
+    return Promise.resolve(null);
   }
-
-  return Promise.resolve(null);
 }
