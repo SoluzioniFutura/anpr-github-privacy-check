@@ -73,7 +73,7 @@ function issueCommentPublishedOrUpdated(body) {
   if(newMessage !== messagge) {
     return Promise.all([
       GithubApi.sendIssueWarnComment(issue, repository, sender),
-      GithubApi.updateIssueCommentBody(issue, repository, newMessage)
+      GithubApi.updateIssueCommentBody(comment, repository, newMessage)
     ]);
   } else {
     return Promise.resolve(null);
